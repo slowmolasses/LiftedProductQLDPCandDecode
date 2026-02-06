@@ -1,0 +1,637 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>Creating and decoding a lifted-product QLDPC code.</title>
+<meta name="generator" content="MATLAB 24.1">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2025-12-12">
+<meta name="DC.source" content="LPcodeConstructDecode.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>Creating and decoding a lifted-product QLDPC code.</h1>
+<!--introduction-->
+<p>Creates and simulates the min-sum decoding of a LP-QLDPC code Starting from doing the same for a QC-LDPC code.</p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">Starting with the classial (3,5)-quasi-cyclic code with lift size 31:</a>
+</li>
+<li>
+<a href="#2">Construction of the parity check matrix from the base protograph via lifting</a>
+</li>
+<li>
+<a href="#3">Simulation of the decoding of the classical quasi-cyclic code</a>
+</li>
+<li>
+<a href="#4">Generating the LP-QLDPC code by lifting the CSS-PC matrix associated with B</a>
+</li>
+<li>
+<a href="#5">Simulation of Min-Sum decoding of the LP-QLDPC code (Need to run above section before every run of the sections under this title)</a>
+</li>
+<li>
+<a href="#10">Helper functions</a>
+</li>
+</ul>
+</div>
+<h2 id="1">Starting with the classial (3,5)-quasi-cyclic code with lift size 31:</h2>
+<pre class="codeinput">l=31;
+x=circshift(eye(l),1);
+protoBpowers=[1 2 4 8 16;5 10 20 9 18;25 19 7 14 28];
+</pre>
+<h2 id="2">Construction of the parity check matrix from the base protograph via lifting</h2>
+<pre class="codeinput">
+<span class="keyword">global</span> HB HBcopy HBheight HBwidth rowspan colspan genmat cn_neighbors vn_neighbors;
+HB=ArrayWithHandle();
+HB.data=sparse(cell2mat(arrayfun(@(int) x^int,protoBpowers,<span class="string">'UniformOutput'</span>,false)));
+HBcopy=HB.data;
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+cn_neighbors=cellfun(@(row) colspan(row&gt;0), mat2cell(HB.data',HBwidth,ones(1,HBheight)),<span class="string">'UniformOutput'</span>,false);
+vn_neighbors=cellfun(@(col) rowspan(col&gt;0), mat2cell(HB.data,HBheight,ones(1,HBwidth)),<span class="string">'UniformOutput'</span>,false);
+genmat=reducePCmat();
+
+<span class="comment">%Plotting the generator matrix</span>
+<span class="comment">% imagesc(HBcopy);</span>
+imagesc([1,155],[1,64],genmat.data);
+<span class="comment">% axis equal;</span>
+<span class="comment">% colorbar;</span>
+paritychecks=mod(genmat.data*(HBcopy'),2);
+fprintf(<span class="string">"\nAny parity check violations exist: "</span>);
+disp(logical(full(any(paritychecks,<span class="string">"all"</span>))));
+</pre>
+<h2 id="3">Simulation of the decoding of the classical quasi-cyclic code</h2>
+<pre class="codeinput">
+<span class="comment">%syndrome_MSA_seq_vars_5(HB.data,vn_neighbors,cn_neighbors,randi([0,1],1,HBheight),log2(9),20);&lt;--- Test of minsum function</span>
+pvals=logspace(log10(.05),log10(.2),10);
+errorprobs=arrayfun(@(p) simulateMinSum(p,0,40),pvals);
+<span class="comment">% errorprob=simulateMinSum(.1,0,20);</span>
+disp(errorprobs);
+</pre>
+<h2 id="4">Generating the LP-QLDPC code by lifting the CSS-PC matrix associated with B</h2>
+<pre class="codeinput">
+<span class="comment">%Unlifted stabilizer matrix</span>
+mb=height(protoBpowers);nb=width(protoBpowers);
+BX=[kron(protoBpowers,eye(nb)), kron(eye(mb),(l-protoBpowers)')];
+BZ=[kron(eye(nb),protoBpowers),kron((l-protoBpowers)',eye(mb))];
+<span class="comment">% Following line generates the CSS-partity check (stabilizer) matrix.</span>
+HB.data=sparse(cell2mat(arrayfun(@(int) (int==0)*zeros(l)+(int~=0)*x^int,[BX,zeros(nb*mb,nb^2+mb^2);zeros(nb*mb,nb^2+mb^2),BZ],<span class="string">'UniformOutput'</span>,false)));
+
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+<span class="keyword">global</span> omega;
+omega=spdiags(1,[-HBwidth/2-1,HBwidth/2+1],HBwidth,HBwidth);
+<span class="comment">% omega=[spalloc(HBwidth/2,HBwidth/2,0),spdiags(1,0,HBwidth/2,HBwidth/2);spdiags(1,0,HBwidth/2,HBwidth/2),spalloc(HBwidth/2,HBwidth/2,0)];</span>
+<span class="comment">%Uncomment and run below two lines to row-reduce the stabilizer matrix of the LPQLDPC code and obtain the # of indep stabilizers.</span>
+<span class="comment">% quantumgenmat=reducePCmat(); % Note 'quantumgenmat' does not correspond to the stabilized code subspace of the Hilbert Space</span>
+<span class="comment">% fprintf('Number of independent stabilizers: %d\n',sum(diag(HB.data))); %Number of logical qubits is then HBwidth/2 less the trace (140 below).</span>
+</pre>
+<h2 id="5">Simulation of Min-Sum decoding of the LP-QLDPC code (Need to run above section before every run of the sections under this title)</h2>
+<p>First, generate the logical Pauli Operators, assuming Z-type Z-logicals. (they live in rowsp(H(BX))^\perp)</p>
+<p>1) Take 140 rows of G(H(BX)). They are automatically symplectically-mutually orthogonal.</p>
+<pre class="codeinput">HB.data=HB.data(1:HBheight/2,1:HBwidth/2); <span class="comment">%assigning HX to HB.data</span>
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+LZgenmat=reducePCmat();
+LZs=[zeros(140,HBwidth),LZgenmat.data(1:140,:)]; <span class="comment">%A generator matrix for logical Zs (in symplectic representation)</span>
+<span class="comment">% Re-assign HB to the CSS matrix by running the previous section before running step 2.</span>
+</pre>
+<p>2) Solve for the j^th X-logical vector by adding LZs as rows to H and augmenting H by a column of zeros that is 1 on the j^th added row. CSSHcopy=HB.data;</p>
+<pre class="codeinput">num_lbits=140;
+num_Xconditions=height(LZs)+HBheight;
+
+HB.data=[HB.data;LZs];
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+
+HB.data=HB.data*omega;
+[Xgens,rowops,colops]=reducePCmat();
+rowrankHBLZ=sum(diag(HB.data));
+reduced_augvecs=rowops*[zeros(HBheight,num_lbits);eye(num_lbits)];
+LXs=(augvecs(1:rowrankHBLZ,:)+(Xgens(1,:)/colops).').'*colops;
+
+<span class="comment">% 3) Symplectically orthogonalize LXs using the LQ decomposition for binary symplectic matrices</span>
+L=zeros(num_lbits);L(1,1)=1;
+<span class="keyword">for</span> j=2:num_lbits
+    L(j,:)=LXs(1:j-1,:)*omega*LXs(j,:).';
+    LXs(j,:)=LXs(j,:)-L*LXs;
+<span class="keyword">end</span>
+LZs=L*LZs; <span class="comment">%Since L is symplectic, joint transformation of LXs and LZs preserve their mutual commutation relations.</span>
+</pre>
+<pre class="codeinput">
+<span class="comment">%Alternatively, get X-logicals from Narayanan's file:</span>
+<span class="keyword">global</span> LX;
+LX=read_L(<span class="string">'LP_Tanner155_lx.alist'</span>);
+fprintf(<span class="string">'Logicals are inconsistent with Z-type stabilizers: %d\n'</span>,full(any(mod(LX*HB.data(446:end,1055:end).',2),<span class="string">'all'</span>)));
+</pre>
+<p>Error performance Simulation</p>
+<pre class="codeinput">HB.data=HB.data(1:475,1:1054);
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+cn_neighbors=cellfun(@(row) colspan(row&gt;0), mat2cell(HB.data.',HBwidth,ones(1,HBheight)),<span class="string">'UniformOutput'</span>,false);
+vn_neighbors=cellfun(@(col) rowspan(col&gt;0), mat2cell(HB.data,HBheight,ones(1,HBwidth)),<span class="string">'UniformOutput'</span>,false);
+pvals=logspace(log10(.04),log10(.09),6);
+errorprobs=arrayfun(@(p) SimulateMinSum_Zchannel(p,45),pvals);
+<span class="comment">%Plotting</span>
+plot(pvals,errorprobs,<span class="string">'-o'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'blue'</span>)
+xlabel(<span class="string">'Z-flip probability'</span>)
+ylabel(<span class="string">'Decoding error probability'</span>)
+title(<span class="string">'Error performance of the [[1054,140,20]]-LP-QLDPC code against Z-errors'</span>)
+grid <span class="string">on</span>
+</pre>
+<h2 id="10">Helper functions</h2>
+<pre class="codeinput">
+<span class="keyword">function</span> errorprob = simulateMinSum(p,b,nsamples) <span class="comment">%Simulate decoding of LDPC code</span>
+<span class="comment">% defined by HB, for transmission through a BSC with t.p. p and bias b.</span>
+    <span class="keyword">global</span> HBcopy genmat vn_neighbors cn_neighbors;
+    failcount=0;
+    <span class="keyword">for</span> i=1:nsamples
+        codedmsgsamp=mod(randi([0,1],1,height(genmat.data))*genmat.data,2);
+        channeloutsamp=arrayfun(@(x) BSCwithbias(x,p,b),codedmsgsamp);
+        error_vec=mod(channeloutsamp+codedmsgsamp,2);
+        syndrome=mod(channeloutsamp*(HBcopy'),2);
+        <span class="comment">% fprintf('No of channel errors: %d\n',sum(channeloutsamp~=codedmsgsamp));</span>
+        <span class="comment">% disp(strcat('Syndrome vector: ',num2str(syndrome)));</span>
+        minsum_error_guess=syndrome_MSA_seq_vars_5(HBcopy,vn_neighbors,cn_neighbors,syndrome,log2((1-p)/p),40);
+        <span class="comment">% disp(strcat('coded message: ',num2str(codedmsgsamp)));</span>
+        <span class="comment">% disp(strcat('errors vector: ',num2str(error_vec)));</span>
+        <span class="comment">% disp(strcat('min sum guess: ',num2str(minsum_error_guess)));</span>
+        <span class="comment">% disp(strcat('mismachvector: ',num2str(codedmsgsamp~=minsum_error_guess)));fprintf('\n');</span>
+        <span class="keyword">if</span> any(error_vec~=minsum_error_guess)
+            <span class="comment">% disp('decode fail');</span>
+            failcount=failcount+1;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    errorprob=failcount/nsamples;
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> errorprob = SimulateMinSum_Zchannel(p,nsamples)
+    <span class="keyword">global</span> HB LX vn_neighbors cn_neighbors; <span class="comment">%omega</span>
+    failcount=0;
+    <span class="keyword">for</span> i=1:nsamples
+        Z_error_samp=arrayfun(@(x) BSCwithbias(x,p,0),zeros(1,width(HB.data)));<span class="comment">%[zeros(1,width(HB.data)/2),arrayfun(@(x) BSCwithbias(x,p,0),zeros(1,width(HB.data)/2))];</span>
+        <span class="comment">% disp(strcat('Z_error_dimensions: ',num2str(size(Z_error_samp))));</span>
+        syndrome=mod(Z_error_samp*HB.data.',2);<span class="comment">%(omega*(HB.data.')),2);</span>
+        <span class="comment">% disp(strcat('Syndrome vector: ',num2str(syndrome)));</span>
+        minsum_error_guess=syndrome_MSA_seq_vars_5(HB.data,vn_neighbors,cn_neighbors,syndrome,log2((1-p)/p),30);
+        <span class="comment">% disp(strcat('errors vector: ',num2str(Z_eror_samp)));</span>
+        <span class="comment">% disp(strcat('min sum guess: ',num2str(size(minsum_error_guess))));</span>
+        <span class="keyword">if</span> any(mod(mod(minsum_error_guess+Z_error_samp,2)*LX.',2),<span class="string">'all'</span>)<span class="comment">%*omega*[LX,zeros(140,width(HB.data)/2)].',2),'all')</span>
+            <span class="comment">% disp('decode fail');</span>
+            failcount=failcount+1;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    errorprob=failcount/nsamples;
+    fprintf(<span class="string">'Evaluated error: %d\n'</span>,errorprob);
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> y = BSCwithbias(x,p,b)
+<span class="comment">%Function simulating the i.i.d. BSC with transition probability p and bias</span>
+<span class="comment">%b. Given a channel input, randomly generates the channel output y as 0 -&gt;</span>
+<span class="comment">%1 with probability p+b and 1-&gt;0 with probability p-b. Make sure p and b</span>
+<span class="comment">%are between 0 and 1.</span>
+    <span class="keyword">if</span> rand(1)&gt;(1-p)+(-1).^x*b
+        y=mod(x+1,2);
+    <span class="keyword">else</span>
+        y=x;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [genmat,rowOPSmatrix,colOPSmatrix] = reducePCmat()
+<span class="comment">%returns the generator matrix of an LDPC code after</span>
+<span class="comment">%copyless row-reduction (mod w) of the global parity check matrix HB</span>
+    <span class="keyword">global</span> HB HBheight HBwidth rowspan colspan;
+    rowOPSmatrix=spalloc(HBheight,HBheight,3*HBheight); <span class="comment">%Preallocation for performance optimization</span>
+    rowOPSdiag=sub2ind(size(rowOPSmatrix),1:HBheight,1:HBheight);
+    rowOPSmatrix(rowOPSdiag)=ones(1,HBheight); <span class="comment">%right-multiplication by this applies the row operations</span>
+    colOPSmatrix=sparse(eye(HBwidth)); <span class="comment">%left-multiplication by this reverses the column operations</span>
+    <span class="comment">% disp("I'm being called");</span>
+    shortside=min(HBheight,HBwidth);
+    colswaps=[];
+    <span class="keyword">for</span> r=1:shortside<span class="comment">% lower triangulation</span>
+        lowercolsupport=rowspan([zeros(r-1,1);HB.data(r:end,r)]'&gt;0);
+        <span class="comment">% disp(lowercolsupport);</span>
+        <span class="keyword">if</span> ~isempty(lowercolsupport)
+            <span class="keyword">if</span> lowercolsupport(1)~=r <span class="comment">%lower row-swap in case zero on rth diagonal entry</span>
+                fprintf(<span class="string">'Swapping rows %d and %d\n\n'</span>,r,lowercolsupport(1));
+                HB.data(r,:)=mod(HB.data(r,:)+HB.data(lowercolsupport(1),:),2);
+                HB.data(lowercolsupport(1),:)=mod(HB.data(lowercolsupport(1),:)+HB.data(r,:),2);
+                HB.data(r,:)=mod(HB.data(r,:)+HB.data(lowercolsupport(1),:),2);
+                <span class="comment">%repeat for rowOPSmatrix</span>
+                rowOPSmatrix(r,:)=mod(rowOPSmatrix(r,:)+rowOPSmatrix(lowercolsupport(1),:),2);
+                rowOPSmatrix(lowercolsupport(1),:)=mod(rowOPSmatrix(lowercolsupport(1),:)+rowOPSmatrix(r,:),2);
+                rowOPSmatrix(r,:)=mod(rowOPSmatrix(r,:)+rowOPSmatrix(lowercolsupport(1),:),2);
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            <span class="comment">% disp("Triggered empty lower column condition");</span>
+            <span class="comment">% fprintf("Upper row at column %d: ",r);fprintf(strcat(num2str(HB.data(r,r+1:end)),'\n'));</span>
+            upperrowsupport=colspan([zeros(1,r),HB.data(r,r+1:end)]&gt;0);
+            <span class="comment">% fprintf("Upper row support at column %d: ",r);fprintf(strcat(num2str(upperrowsupport),'\n'));</span>
+            fprintf(strcat(<span class="string">"Upper row support is empty: "</span>,num2str(isempty(upperrowsupport)),<span class="string">"\n"</span>));
+            <span class="keyword">if</span> isempty(upperrowsupport) <span class="comment">% column-swap in case zero on lower column</span>
+                <span class="comment">%Send empty row to bottom of matrix</span>
+                j=0;
+                <span class="keyword">while</span> ~any(HB.data(end-j,:)) &amp;&amp; HBheight-j&gt;r<span class="comment">%Need to make sure bottom row is not all zeros.</span>
+                    j=j+1;
+                <span class="keyword">end</span>
+                <span class="keyword">if</span> HBheight-j&gt;r
+                    fprintf(strcat(<span class="string">"Sending row "</span>,num2str(r),<span class="string">" to bottom (swapping with row %d)\n"</span>),HBheight-j);
+                    HB.data(r,:)=HB.data(end-j,:);<span class="comment">%mod(HB.data(r,:)+HB.data(end,:),2);</span>
+                    HB.data(end-j,:)=zeros(1,HBwidth);<span class="comment">%mod(HB.data(end,:)+HB.data(r,:),2);</span>
+                    <span class="comment">% HB.data(r,:)=mod(HB.data(r,:)+HB.data(end,:),2);</span>
+                    <span class="comment">%repeat for rowOPSmatrix</span>
+                    rowOPSmatrix(r,:)=mod(rowOPSmatrix(r,:)+rowOPSmatrix(end-j,:),2);
+                    rowOPSmatrix(end-j,:)=mod(rowOPSmatrix(end-j,:)+rowOPSmatrix(r,:),2);
+                    rowOPSmatrix(r,:)=mod(rowOPSmatrix(r,:)+rowOPSmatrix(end-j,:),2);
+                <span class="keyword">end</span>
+                upperrowsupport=colspan([zeros(1,r),HB.data(r,r+1:end)]&gt;0);<span class="comment">%Need to reevaluate upper row support after rowswap</span>
+            <span class="keyword">end</span>
+            <span class="keyword">if</span> ~isempty(upperrowsupport)
+                fprintf(<span class="string">'Swapping columns %d and %d\n\n'</span>,r,upperrowsupport(1));
+                HB.data(:,r)=mod(HB.data(:,r)+HB.data(:,upperrowsupport(1)),2);
+                HB.data(:,upperrowsupport(1))=mod(HB.data(:,upperrowsupport(1))+HB.data(:,r),2);
+                HB.data(:,r)=mod(HB.data(:,r)+HB.data(:,upperrowsupport(1)),2);
+                colswaps=[colswaps;[r,upperrowsupport(1)]];
+                <span class="comment">%Keeping track of the column-swaps (via colswaps) of HB to correct kernel</span>
+                <span class="comment">%basis coordinates so that final kernel corresponds to OG HB</span>
+                lowercolsupport=rowspan([zeros(r-1,1);HB.data(r:end,r)]'&gt;0); <span class="comment">%Need to reeavuate lowercolsupport after swap</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> length(lowercolsupport)&gt;1
+            <span class="comment">%Ellimination of 1s under entry r,r.</span>
+            HB.data(lowercolsupport(2:end),:)=mod(HB.data(lowercolsupport(2:end),:)+HB.data(r,:),2);
+            <span class="comment">%Repeat for rowOPSmatrix</span>
+            rowOPSmatrix(lowercolsupport(2:end),:)=mod(rowOPSmatrix(lowercolsupport(2:end),:)+rowOPSmatrix(r,:),2);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    fprintf(strcat(<span class="string">'Number of column swaps performed: '</span>,num2str(height(colswaps)),<span class="string">'\n'</span>));
+    <span class="keyword">for</span> c=flip(1:shortside,2) <span class="comment">%Upper triangulation</span>
+        <span class="comment">% c=shortside+1-j;</span>
+        <span class="keyword">if</span> HB.data(c,c)==1
+            <span class="comment">%Ellimination of 1s above entry c,c.</span>
+            uppercolsupport=rowspan([HB.data(1:c,c);zeros(shortside-c,1)]&gt;0);
+            <span class="keyword">if</span> length(uppercolsupport)&gt;1
+                HB.data(uppercolsupport(1:end-1),:)=mod(HB.data(uppercolsupport(1:end-1),:)+HB.data(c,:),2);
+                <span class="comment">%Repeat for rowOPSmatrix</span>
+                rowOPSmatrix(uppercolsupport(1:end-1),:)=mod(rowOPSmatrix(uppercolsupport(1:end-1),:)+rowOPSmatrix(c,:),2);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="comment">% Read row-rank of matrix from row-reduced form:</span>
+    rowrank=sum(diag(HB.data));
+    genmat=ArrayWithHandle();
+    genmat.data=[HB.data(1:rowrank,rowrank+1:end)',eye(width(HB.data)-rowrank)];
+    <span class="comment">%Undo column swaps in the generator matrix.</span>
+    <span class="keyword">for</span> pair=flipud(colswaps)' <span class="comment">%more general flip function: flip(A,dim)</span>
+        genmat.data(:,pair(1))=mod(genmat.data(:,pair(1))+genmat.data(:,pair(2)),2);
+        genmat.data(:,pair(2))=mod(genmat.data(:,pair(2))+genmat.data(:,pair(1)),2);
+        genmat.data(:,pair(1))=mod(genmat.data(:,pair(1))+genmat.data(:,pair(2)),2);
+        <span class="comment">%repeat for colOPSmatrix</span>
+        colOPSmatrix(:,pair(1))=mod(colOPSmatrix(:,pair(1))+colOPSmatrix(:,pair(2)),2);
+        colOPSmatrix(:,pair(2))=mod(colOPSmatrix(:,pair(2))+colOPSmatrix(:,pair(1)),2);
+        colOPSmatrix(:,pair(1))=mod(colOPSmatrix(:,pair(1))+colOPSmatrix(:,pair(2)),2);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre>
+<p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2024a</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% Creating and decoding a lifted-product QLDPC code. 
+% Creates and simulates the min-sum decoding of a LP-QLDPC code
+% Starting from doing the same for a QC-LDPC code. 
+%% Starting with the classial (3,5)-quasi-cyclic code with lift size 31:
+l=31;
+x=circshift(eye(l),1);
+protoBpowers=[1 2 4 8 16;5 10 20 9 18;25 19 7 14 28];
+%% Construction of the parity check matrix from the base protograph via lifting
+global HB HBcopy HBheight HBwidth rowspan colspan genmat cn_neighbors vn_neighbors;
+HB=ArrayWithHandle();
+HB.data=sparse(cell2mat(arrayfun(@(int) x^int,protoBpowers,'UniformOutput',false)));
+HBcopy=HB.data;
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+cn_neighbors=cellfun(@(row) colspan(row>0), mat2cell(HB.data',HBwidth,ones(1,HBheight)),'UniformOutput',false);
+vn_neighbors=cellfun(@(col) rowspan(col>0), mat2cell(HB.data,HBheight,ones(1,HBwidth)),'UniformOutput',false);
+genmat=reducePCmat();
+
+%Plotting the generator matrix
+% imagesc(HBcopy);
+imagesc([1,155],[1,64],genmat.data);
+% axis equal;
+% colorbar;
+paritychecks=mod(genmat.data*(HBcopy'),2);
+fprintf("\nAny parity check violations exist: ");
+disp(logical(full(any(paritychecks,"all"))));
+%% Simulation of the decoding of the classical quasi-cyclic code
+%syndrome_MSA_seq_vars_5(HB.data,vn_neighbors,cn_neighbors,randi([0,1],1,HBheight),log2(9),20);<REPLACE_WITH_DASH_DASH- Test of minsum function
+pvals=logspace(log10(.05),log10(.2),10);
+errorprobs=arrayfun(@(p) simulateMinSum(p,0,40),pvals);
+% errorprob=simulateMinSum(.1,0,20);
+disp(errorprobs);
+
+%% Generating the LP-QLDPC code by lifting the CSS-PC matrix associated with B
+%Unlifted stabilizer matrix
+mb=height(protoBpowers);nb=width(protoBpowers);
+BX=[kron(protoBpowers,eye(nb)), kron(eye(mb),(l-protoBpowers)')];
+BZ=[kron(eye(nb),protoBpowers),kron((l-protoBpowers)',eye(mb))];
+% Following line generates the CSS-partity check (stabilizer) matrix.
+HB.data=sparse(cell2mat(arrayfun(@(int) (int==0)*zeros(l)+(int~=0)*x^int,[BX,zeros(nb*mb,nb^2+mb^2);zeros(nb*mb,nb^2+mb^2),BZ],'UniformOutput',false)));
+
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+global omega;
+omega=spdiags(1,[-HBwidth/2-1,HBwidth/2+1],HBwidth,HBwidth);
+% omega=[spalloc(HBwidth/2,HBwidth/2,0),spdiags(1,0,HBwidth/2,HBwidth/2);spdiags(1,0,HBwidth/2,HBwidth/2),spalloc(HBwidth/2,HBwidth/2,0)];
+%Uncomment and run below two lines to row-reduce the stabilizer matrix of the LPQLDPC code and obtain the # of indep stabilizers.
+% quantumgenmat=reducePCmat(); % Note 'quantumgenmat' does not correspond to the stabilized code subspace of the Hilbert Space
+% fprintf('Number of independent stabilizers: %d\n',sum(diag(HB.data))); %Number of logical qubits is then HBwidth/2 less the trace (140 below).
+
+%% Simulation of Min-Sum decoding of the LP-QLDPC code (Need to run above section before every run of the sections under this title)
+% First, generate the logical Pauli Operators, assuming Z-type Z-logicals. (they live in rowsp(H(BX))^\perp)
+%% 
+% 1) Take 140 rows of G(H(BX)). They are automatically symplectically-mutually orthogonal.
+HB.data=HB.data(1:HBheight/2,1:HBwidth/2); %assigning HX to HB.data
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+LZgenmat=reducePCmat();
+LZs=[zeros(140,HBwidth),LZgenmat.data(1:140,:)]; %A generator matrix for logical Zs (in symplectic representation)
+% Re-assign HB to the CSS matrix by running the previous section before running step 2.
+
+%% 
+% 2) Solve for the j^th X-logical vector by adding LZs as rows to H and augmenting H by a column of zeros that is 1 on the j^th added row.
+% CSSHcopy=HB.data;
+num_lbits=140;
+num_Xconditions=height(LZs)+HBheight;
+
+HB.data=[HB.data;LZs];
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+
+HB.data=HB.data*omega;
+[Xgens,rowops,colops]=reducePCmat();
+rowrankHBLZ=sum(diag(HB.data));
+reduced_augvecs=rowops*[zeros(HBheight,num_lbits);eye(num_lbits)];
+LXs=(augvecs(1:rowrankHBLZ,:)+(Xgens(1,:)/colops).').'*colops;
+
+% 3) Symplectically orthogonalize LXs using the LQ decomposition for binary symplectic matrices
+L=zeros(num_lbits);L(1,1)=1;
+for j=2:num_lbits
+    L(j,:)=LXs(1:j-1,:)*omega*LXs(j,:).';
+    LXs(j,:)=LXs(j,:)-L*LXs;
+end
+LZs=L*LZs; %Since L is symplectic, joint transformation of LXs and LZs preserve their mutual commutation relations.
+
+
+%% 
+%Alternatively, get X-logicals from Narayanan's file:
+global LX;
+LX=read_L('LP_Tanner155_lx.alist');
+fprintf('Logicals are inconsistent with Z-type stabilizers: %d\n',full(any(mod(LX*HB.data(446:end,1055:end).',2),'all')));
+
+%% 
+% Error performance Simulation
+HB.data=HB.data(1:475,1:1054);
+HBheight=height(HB.data);HBwidth=width(HB.data);
+rowspan=1:HBheight;colspan=1:HBwidth;
+cn_neighbors=cellfun(@(row) colspan(row>0), mat2cell(HB.data.',HBwidth,ones(1,HBheight)),'UniformOutput',false);
+vn_neighbors=cellfun(@(col) rowspan(col>0), mat2cell(HB.data,HBheight,ones(1,HBwidth)),'UniformOutput',false);
+pvals=logspace(log10(.04),log10(.09),6);
+errorprobs=arrayfun(@(p) SimulateMinSum_Zchannel(p,45),pvals);
+%Plotting
+plot(pvals,errorprobs,'-o','MarkerFaceColor','blue')
+xlabel('Z-flip probability')
+ylabel('Decoding error probability')
+title('Error performance of the [[1054,140,20]]-LP-QLDPC code against Z-errors')
+grid on
+
+%% Helper functions
+function errorprob = simulateMinSum(p,b,nsamples) %Simulate decoding of LDPC code 
+% defined by HB, for transmission through a BSC with t.p. p and bias b.
+    global HBcopy genmat vn_neighbors cn_neighbors;
+    failcount=0;
+    for i=1:nsamples
+        codedmsgsamp=mod(randi([0,1],1,height(genmat.data))*genmat.data,2);
+        channeloutsamp=arrayfun(@(x) BSCwithbias(x,p,b),codedmsgsamp);
+        error_vec=mod(channeloutsamp+codedmsgsamp,2);
+        syndrome=mod(channeloutsamp*(HBcopy'),2);
+        % fprintf('No of channel errors: %d\n',sum(channeloutsamp~=codedmsgsamp));
+        % disp(strcat('Syndrome vector: ',num2str(syndrome)));
+        minsum_error_guess=syndrome_MSA_seq_vars_5(HBcopy,vn_neighbors,cn_neighbors,syndrome,log2((1-p)/p),40);
+        % disp(strcat('coded message: ',num2str(codedmsgsamp)));
+        % disp(strcat('errors vector: ',num2str(error_vec)));
+        % disp(strcat('min sum guess: ',num2str(minsum_error_guess)));
+        % disp(strcat('mismachvector: ',num2str(codedmsgsamp~=minsum_error_guess)));fprintf('\n');
+        if any(error_vec~=minsum_error_guess)
+            % disp('decode fail');
+            failcount=failcount+1;
+        end
+    end
+    errorprob=failcount/nsamples;
+end
+
+function errorprob = SimulateMinSum_Zchannel(p,nsamples)
+    global HB LX vn_neighbors cn_neighbors; %omega
+    failcount=0;
+    for i=1:nsamples
+        Z_error_samp=arrayfun(@(x) BSCwithbias(x,p,0),zeros(1,width(HB.data)));%[zeros(1,width(HB.data)/2),arrayfun(@(x) BSCwithbias(x,p,0),zeros(1,width(HB.data)/2))];
+        % disp(strcat('Z_error_dimensions: ',num2str(size(Z_error_samp))));
+        syndrome=mod(Z_error_samp*HB.data.',2);%(omega*(HB.data.')),2);
+        % disp(strcat('Syndrome vector: ',num2str(syndrome)));
+        minsum_error_guess=syndrome_MSA_seq_vars_5(HB.data,vn_neighbors,cn_neighbors,syndrome,log2((1-p)/p),30);
+        % disp(strcat('errors vector: ',num2str(Z_eror_samp)));
+        % disp(strcat('min sum guess: ',num2str(size(minsum_error_guess))));
+        if any(mod(mod(minsum_error_guess+Z_error_samp,2)*LX.',2),'all')%*omega*[LX,zeros(140,width(HB.data)/2)].',2),'all')
+            % disp('decode fail');
+            failcount=failcount+1;
+        end
+    end
+    errorprob=failcount/nsamples;
+    fprintf('Evaluated error: %d\n',errorprob);
+end
+
+function y = BSCwithbias(x,p,b)
+%Function simulating the i.i.d. BSC with transition probability p and bias
+%b. Given a channel input, randomly generates the channel output y as 0 ->
+%1 with probability p+b and 1->0 with probability p-b. Make sure p and b
+%are between 0 and 1.
+    if rand(1)>(1-p)+(-1).^x*b
+        y=mod(x+1,2);
+    else 
+        y=x;
+    end
+end
+
+function [genmat,rowOPSmatrix,colOPSmatrix] = reducePCmat() 
+%returns the generator matrix of an LDPC code after
+%copyless row-reduction (mod w) of the global parity check matrix HB
+    global HB HBheight HBwidth rowspan colspan;
+    rowOPSmatrix=spalloc(HBheight,HBheight,3*HBheight); %Preallocation for performance optimization
+    rowOPSdiag=sub2ind(size(rowOPSmatrix),1:HBheight,1:HBheight);
+    rowOPSmatrix(rowOPSdiag)=ones(1,HBheight); %right-multiplication by this applies the row operations
+    colOPSmatrix=sparse(eye(HBwidth)); %left-multiplication by this reverses the column operations
+    % disp("I'm being called");
+    shortside=min(HBheight,HBwidth);
+    colswaps=[];
+    for r=1:shortside% lower triangulation
+        lowercolsupport=rowspan([zeros(r-1,1);HB.data(r:end,r)]'>0);
+        % disp(lowercolsupport);
+        if ~isempty(lowercolsupport)
+            if lowercolsupport(1)~=r %lower row-swap in case zero on rth diagonal entry
+                fprintf('Swapping rows %d and %d\n\n',r,lowercolsupport(1));
+                HB.data(r,:)=mod(HB.data(r,:)+HB.data(lowercolsupport(1),:),2);
+                HB.data(lowercolsupport(1),:)=mod(HB.data(lowercolsupport(1),:)+HB.data(r,:),2);
+                HB.data(r,:)=mod(HB.data(r,:)+HB.data(lowercolsupport(1),:),2);
+                %repeat for rowOPSmatrix
+                rowOPSmatrix(r,:)=mod(rowOPSmatrix(r,:)+rowOPSmatrix(lowercolsupport(1),:),2);
+                rowOPSmatrix(lowercolsupport(1),:)=mod(rowOPSmatrix(lowercolsupport(1),:)+rowOPSmatrix(r,:),2);
+                rowOPSmatrix(r,:)=mod(rowOPSmatrix(r,:)+rowOPSmatrix(lowercolsupport(1),:),2);
+            end
+        else
+            % disp("Triggered empty lower column condition");
+            % fprintf("Upper row at column %d: ",r);fprintf(strcat(num2str(HB.data(r,r+1:end)),'\n'));
+            upperrowsupport=colspan([zeros(1,r),HB.data(r,r+1:end)]>0);
+            % fprintf("Upper row support at column %d: ",r);fprintf(strcat(num2str(upperrowsupport),'\n'));
+            fprintf(strcat("Upper row support is empty: ",num2str(isempty(upperrowsupport)),"\n"));
+            if isempty(upperrowsupport) % column-swap in case zero on lower column
+                %Send empty row to bottom of matrix 
+                j=0;
+                while ~any(HB.data(end-j,:)) && HBheight-j>r%Need to make sure bottom row is not all zeros.
+                    j=j+1;
+                end                    
+                if HBheight-j>r
+                    fprintf(strcat("Sending row ",num2str(r)," to bottom (swapping with row %d)\n"),HBheight-j);
+                    HB.data(r,:)=HB.data(end-j,:);%mod(HB.data(r,:)+HB.data(end,:),2);
+                    HB.data(end-j,:)=zeros(1,HBwidth);%mod(HB.data(end,:)+HB.data(r,:),2);
+                    % HB.data(r,:)=mod(HB.data(r,:)+HB.data(end,:),2);
+                    %repeat for rowOPSmatrix
+                    rowOPSmatrix(r,:)=mod(rowOPSmatrix(r,:)+rowOPSmatrix(end-j,:),2);
+                    rowOPSmatrix(end-j,:)=mod(rowOPSmatrix(end-j,:)+rowOPSmatrix(r,:),2);
+                    rowOPSmatrix(r,:)=mod(rowOPSmatrix(r,:)+rowOPSmatrix(end-j,:),2);
+                end
+                upperrowsupport=colspan([zeros(1,r),HB.data(r,r+1:end)]>0);%Need to reevaluate upper row support after rowswap
+            end
+            if ~isempty(upperrowsupport)
+                fprintf('Swapping columns %d and %d\n\n',r,upperrowsupport(1));
+                HB.data(:,r)=mod(HB.data(:,r)+HB.data(:,upperrowsupport(1)),2);
+                HB.data(:,upperrowsupport(1))=mod(HB.data(:,upperrowsupport(1))+HB.data(:,r),2);
+                HB.data(:,r)=mod(HB.data(:,r)+HB.data(:,upperrowsupport(1)),2);
+                colswaps=[colswaps;[r,upperrowsupport(1)]]; 
+                %Keeping track of the column-swaps (via colswaps) of HB to correct kernel
+                %basis coordinates so that final kernel corresponds to OG HB
+                lowercolsupport=rowspan([zeros(r-1,1);HB.data(r:end,r)]'>0); %Need to reeavuate lowercolsupport after swap
+            end
+        end
+        if length(lowercolsupport)>1 
+            %Ellimination of 1s under entry r,r.
+            HB.data(lowercolsupport(2:end),:)=mod(HB.data(lowercolsupport(2:end),:)+HB.data(r,:),2);
+            %Repeat for rowOPSmatrix
+            rowOPSmatrix(lowercolsupport(2:end),:)=mod(rowOPSmatrix(lowercolsupport(2:end),:)+rowOPSmatrix(r,:),2);
+        end
+    end
+    fprintf(strcat('Number of column swaps performed: ',num2str(height(colswaps)),'\n'));
+    for c=flip(1:shortside,2) %Upper triangulation
+        % c=shortside+1-j;
+        if HB.data(c,c)==1
+            %Ellimination of 1s above entry c,c.
+            uppercolsupport=rowspan([HB.data(1:c,c);zeros(shortside-c,1)]>0);
+            if length(uppercolsupport)>1
+                HB.data(uppercolsupport(1:end-1),:)=mod(HB.data(uppercolsupport(1:end-1),:)+HB.data(c,:),2);
+                %Repeat for rowOPSmatrix
+                rowOPSmatrix(uppercolsupport(1:end-1),:)=mod(rowOPSmatrix(uppercolsupport(1:end-1),:)+rowOPSmatrix(c,:),2);
+            end
+        end
+    end
+    % Read row-rank of matrix from row-reduced form:
+    rowrank=sum(diag(HB.data));
+    genmat=ArrayWithHandle();
+    genmat.data=[HB.data(1:rowrank,rowrank+1:end)',eye(width(HB.data)-rowrank)];
+    %Undo column swaps in the generator matrix.
+    for pair=flipud(colswaps)' %more general flip function: flip(A,dim)
+        genmat.data(:,pair(1))=mod(genmat.data(:,pair(1))+genmat.data(:,pair(2)),2);
+        genmat.data(:,pair(2))=mod(genmat.data(:,pair(2))+genmat.data(:,pair(1)),2);
+        genmat.data(:,pair(1))=mod(genmat.data(:,pair(1))+genmat.data(:,pair(2)),2);
+        %repeat for colOPSmatrix
+        colOPSmatrix(:,pair(1))=mod(colOPSmatrix(:,pair(1))+colOPSmatrix(:,pair(2)),2);
+        colOPSmatrix(:,pair(2))=mod(colOPSmatrix(:,pair(2))+colOPSmatrix(:,pair(1)),2);
+        colOPSmatrix(:,pair(1))=mod(colOPSmatrix(:,pair(1))+colOPSmatrix(:,pair(2)),2);
+    end
+end
+
+##### SOURCE END #####
+-->
+</body>
+</html>

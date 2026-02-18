@@ -369,7 +369,7 @@ title('Performance curve of the [155,64,20] QC-LDPC code');
 grid on;
 ```
 
-**Expected result:** Matches `_155_64_20_QCLDPC_performancecurve.png` — threshold around p ≈ 0.11.
+**Expected result:** Matches ![[155,64,20]_QCLDPC_performancecurve](_155_64_20_QCLDPC_performancecurve.png) — threshold around p ≈ 0.11.
 
 ### Reproducing the Quantum [[1054,140,20]] LP-QLDPC Threshold Plot
 
@@ -389,7 +389,7 @@ title('Error performance of the [[1054,140,20]]-LP-QLDPC code against Z-errors')
 grid on;
 ```
 
-**Expected result:** Matches `!(__1054_140_20__LPQLDPC_performancecurve_critical_p.png)` — threshold near p ≈ 0.06, with <1% logical error rate at p = 0.06.
+**Expected result:** Matches ![[[1054,140,20]]LPQLDPC_performancecurve_critical_p](__1054_140_20__LPQLDPC_performancecurve_critical_p.png) — threshold near p ≈ 0.06, with <1% logical error rate at p = 0.06.
 
 ---
 

@@ -399,9 +399,9 @@ The uploaded matrix images illustrate the sparse structure of the constructed co
 
 | Image | Description |
 |-------|-------------|
-| `![QCLDPC__3_5__PCmatrix.png](QCLDPC__3_5__PCmatrix.png)` | **Parity-check matrix H** of the [155,64,20] QC-LDPC code. Block-circulant structure visible (3 × 5 blocks, each 31 × 31). Yellow = 1, blue = 0. |
-| `![QCLDPC__3_5__PCmatrix_rowreduced.png](QCLDPC__3_5__PCmatrix_rowreduced.png)` | **Row-reduced form** of H after Gaussian elimination. Upper-right 64 × 64 block is identity (systematic form). |
-| `![QCLDPC__3_5__GeneratorMatrix.png](QCLDPC__3_5__GeneratorMatrix.png)` | **Generator matrix G** extracted from RREF of H. First 91 columns are parity bits (matrix P), last 64 columns are identity (information bits). |
+| ![QCLDPC__3_5__PCmatrix.png](QCLDPC__3_5__PCmatrix.png) | **Parity-check matrix H** of the [155,64,20] QC-LDPC code. Block-circulant structure visible (3 × 5 blocks, each 31 × 31). Yellow = 1, blue = 0. |
+| ![QCLDPC__3_5__PCmatrix_rowreduced.png](QCLDPC__3_5__PCmatrix_rowreduced.png) | **Row-reduced form** of H after Gaussian elimination. Upper-right 64 × 64 block is identity (systematic form). |
+| ![QCLDPC__3_5__GeneratorMatrix.png](QCLDPC__3_5__GeneratorMatrix.png) | **Generator matrix G** extracted from RREF of H. First 91 columns are parity bits (matrix P), last 64 columns are identity (information bits). |
 
 These visualizations confirm:
 - The quasi-cyclic structure is preserved under lifting (protograph → full matrix)

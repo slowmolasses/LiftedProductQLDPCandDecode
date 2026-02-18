@@ -52,9 +52,7 @@ LPcodeConstructDecode
 ### Step 1: Classical QC-LDPC Code from Protograph
 
 The (3,5) **base matrix** (protograph) is:
-
-
-
+<img width="280" height="95" alt="image" src="https://github.com/user-attachments/assets/a1784544-2e8a-4cde-8864-93fa6c9d5623" />
 Each entry `x^k` represents a circulant permutation matrix of size l × l (here l = 31). The full parity-check matrix **H** is obtained by replacing each entry with its corresponding circulant:
 
 ```matlab
@@ -399,9 +397,9 @@ The uploaded matrix images illustrate the sparse structure of the constructed co
 
 | Image | Description |
 |-------|-------------|
-| `QCLDPC__3_5__PCmatrix.png` | **Parity-check matrix H** of the [155,64,20] QC-LDPC code. Block-circulant structure visible (3 × 5 blocks, each 31 × 31). Yellow = 1, blue = 0. |
-| `QCLDPC__3_5__PCmatrix_rowreduced.png` | **Row-reduced form** of H after Gaussian elimination. Upper-right 64 × 64 block is identity (systematic form). |
-| `QCLDPC__3_5__GeneratorMatrix.png` | **Generator matrix G** extracted from RREF of H. First 91 columns are parity bits (matrix P), last 64 columns are identity (information bits). |
+| `QCLDPC_(3,5)_PCmatrix.png` | **Parity-check matrix H** of the [155,64,20] QC-LDPC code. Block-circulant structure visible (3 × 5 blocks, each 31 × 31). Yellow = 1, blue = 0. |
+| `QCLDPC_(3,5)_PCmatrix_rowreduced.png` | **Row-reduced form** of H after Gaussian elimination. Upper-right 64 × 64 block is identity (systematic form). |
+| `QCLDPC_(3,5)_GeneratorMatrix.png` | **Generator matrix G** extracted from RREF of H. First 91 columns are parity bits (matrix P), last 64 columns are identity (information bits). |
 
 These visualizations confirm:
 - The quasi-cyclic structure is preserved under lifting (protograph → full matrix)
